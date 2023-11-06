@@ -1,0 +1,117 @@
+-- Create the 'branch' table
+CREATE TABLE branch (
+branch_name VARCHAR(255) PRIMARY KEY,
+branch_city VARCHAR(255) NOT NULL,
+assets_amt DECIMAL(10, 2) NOT NULL
+);
+-- Create the 'customer' table
+CREATE TABLE customer (
+cust_name VARCHAR(255) PRIMARY KEY,
+cust_street VARCHAR(255),
+cust_city VARCHAR(255)
+);
+-- Create the 'account' table
+CREATE TABLE account (
+Acc_no INT PRIMARY KEY,
+branch_name VARCHAR(255),
+balance DECIMAL(10, 2),
+FOREIGN KEY (branch_name) REFERENCES branch(branch_name)
+);
+-- Create the 'depositor' table
+CREATE TABLE depositor (
+cust_name VARCHAR(255),
+acc_no INT,
+FOREIGN KEY (cust_name) REFERENCES customer(cust_name),
+FOREIGN KEY (acc_no) REFERENCES account(Acc_no)
+);
+-- Create the 'loan' table
+CREATE TABLE loan (
+Acc_no INT,
+loan_no INT PRIMARY KEY,
+branch_name VARCHAR(255),
+amount DECIMAL(10, 2),
+FOREIGN KEY (Acc_no) REFERENCES account(Acc_no),
+FOREIGN KEY (branch_name) REFERENCES branch(branch_name)
+);
+-- Create the 'borrower' table
+CREATE TABLE borrower (
+cust_name VARCHAR(255),
+loan_no INT,
+FOREIGN KEY (cust_name) REFERENCES customer(cust_name),
+FOREIGN KEY (loan_no) REFERENCES loan(loan_no)
+);
+-- Insert sample data into the 'branch' table
+INSERT INTO branch (branch_name, branch_city, assets_amt) VALUES
+('Pimpri', 'Pune', 1500000.00),
+('Akurdi', 'Pune', 1200000.00),
+('Chinchwad', 'Pune', 1800000.00);
+-- Insert sample data into the 'customer' table with Indian names and addresses
+INSERT INTO customer (cust_name, cust_street, cust_city) VALUES
+('Rahul', '123 Gandhi Road', 'Pune'),
+('Sunita', '456 Tagore Street', 'Pune'),
+('Amit', '789 Nehru Avenue', 'Pune');
+-- Insert sample data into the 'account' table
+INSERT INTO account (Acc_no, branch_name, balance) VALUES
+(101, 'Pimpri', 5000.00),
+(102, 'Akurdi', 8000.00),
+(103, 'Chinchwad', 12000.00);
+-- Insert sample data into the 'depositor' table
+INSERT INTO depositor (cust_name, acc_no) VALUES
+('Rahul', 101),
+('Sunita', 102);
+-- Insert sample data into the 'loan' table
+INSERT INTO loan (Acc_no, loan_no, branch_name, amount) VALUES
+(103, 201, 'Pimpri', 15000.00),
+(102, 202, 'Akurdi', 10000.00),
+(101, 203, 'Chinchwad', 20000.00);
+-- Insert sample data into the 'borrower' table
+INSERT INTO borrower (cust_name, loan_no) VALUES
+('Amit', 201),
+('Rahul', 202);
+-- Find the names of all branches in the loan relation:
+SELECT DISTINCT branch_name
+FROM loan;
+-- Find all loan numbers for loans made at Pimpri Branch with a loan amount > 12000:
+SELECT loan_no
+FROM loan
+WHERE branch_name = 'Pimpri' AND amount > 12000;
+-- Find all customers who have a loan from the bank. Find their names, loan_no, and loan amount:
+SELECT c.cust_name, l.loan_no, l.amount
+FROM customer c
+INNER JOIN borrower b ON c.cust_name = b.cust_name
+INNER JOIN loan l ON b.loan_no = l.loan_no;
+-- List all customers in alphabetical order who have a loan from Akurdi branch:
+SELECT c.cust_name
+FROM customer c
+INNER JOIN borrower b ON c.cust_name = b.cust_name
+INNER JOIN loan l ON b.loan_no = l.loan_no
+WHERE l.branch_name = 'Akurdi'
+ORDER BY c.cust_name;
+-- Find all customers who have an account or loan or both at the bank:
+SELECT DISTINCT c.cust_name
+FROM customer c
+LEFT JOIN depositor d ON c.cust_name = d.cust_name
+LEFT JOIN borrower b ON c.cust_name = b.cust_name
+WHERE d.cust_name IS NOT NULL OR b.cust_name IS NOT NULL;
+-- Find all customers who have both an account and a loan at the bank:
+SELECT c.cust_name
+FROM customer c
+JOIN depositor d ON c.cust_name = d.cust_name
+JOIN borrower b ON c.cust_name = b.cust_name;
+-- Find the average account balance at the Pimpri branch:
+SELECT AVG(balance) AS avg_balance
+FROM account
+WHERE branch_name = 'Pimpri';
+-- Find the average account balance at each branch:
+SELECT branch_name, AVG(balance) AS avg_balance
+FROM account
+GROUP BY branch_name;
+-- Find the branches where the average account balance > 12000:
+SELECT branch_name
+FROM (SELECT branch_name, AVG(balance) AS avg_balance
+FROM account
+GROUP BY branch_name) AS avg_balances
+WHERE avg_balance > 12000;
+-- Calculate the total loan amount given by the bank:
+SELECT SUM(amount) AS total_loan_amount
+FROM loan;

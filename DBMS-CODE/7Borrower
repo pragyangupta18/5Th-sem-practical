@@ -1,0 +1,39 @@
+create table Fine(roll_no int,Date date,Amount int);  
+desc Fine; 
+create table Borrower(roll_no int AUTO_INCREMENT,Name varchar(50),Date_of_issue date,Book_name varchar(50),Status varchar(10),primary key(roll_no)); 
+insert into Borrower(Name,Date_of_issue,Book_name,Status)values 
+("Himanshu",'2023-06-15',"SEPM","Issued"), 
+("Abhay",'2023-08-17',"TOC","Issued"), 
+("Puja",'2023-06-13',"CN","Issued"), 
+("Geta",'2023-08-20',"TOC","Issued"), 
+("Kalyani",'2023-06-24',"ISEM","Issued"), 
+("Dhanu",'2023-07-23',"ISEM","Issued"); 
+select* from Borrower; 
+delimiter $$ 
+ 
+create procedure studfine(roll int,nm varchar(50)) 
+begin 
+declare i_date date; 
+declare diff int; 
+declare fine_amt int; 
+DECLARE EXIT HANDLER FOR SQLEXCEPTION SELECT"Table not found"; 
+select Date_of_issue into i_date from Borrower where roll_no=roll and Name=nm; 
+select DATEDIFF(CURDATE(),i_date)into diff; 
+if(diff>=15 and diff<=30) 
+then 
+set fine_amt=diff*5; 
+insert into Fine values(roll,CURDATE(),fine_amt); 
+elseif(diff>30) 
+then 
+set fine_amt=diff*50; 
+insert into Fine values(roll,CURDATE(),fine_amt); 
+end if; 
+update Borrower set Status="Return" where roll_no=roll and Name=nm; 
+end $$ 
+call studfine(1,"Pooja") 
+$$ 
+select*from Borrower;
+select * from Fine; 
+call studfine(2,"Abhay") 
+$$ 
+select * from Borrower$$

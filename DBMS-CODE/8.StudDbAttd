@@ -1,0 +1,45 @@
+-- Create the Students table with an auto-incremented student_id
+CREATE TABLE Students (
+    student_id INT AUTO_INCREMENT PRIMARY KEY,
+    student_name VARCHAR(255) NOT NULL,
+    class TEXT,
+    address TEXT,
+    grades TEXT,
+    enrolment_details TEXT
+);
+
+-- Create the Subjects table
+CREATE TABLE Subjects (
+    student_id INT,
+    subject_name TEXT,
+    attendance INT
+);
+
+-- Create an Index on the student name
+CREATE INDEX student_name_index
+ON Students (student_name);
+
+-- Create a View for summarized insights into student performance and attendance
+CREATE VIEW StudentPerformance AS
+SELECT s.student_id, s.student_name, AVG(sub.attendance) AS avg_attendance, AVG(CAST(s.grades AS DECIMAL)) AS avg_grades
+FROM Students s
+JOIN Subjects sub ON s.student_id = sub.student_id
+GROUP BY s.student_id;
+
+-- Insert sample data into Students table with Indian names
+INSERT INTO Students (student_name, class, address, grades, enrolment_details)
+VALUES
+    ('Rahul Sharma', 'Class A', '123 Main St', '90', '2022-01-15'),
+    ('Priya Patel', 'Class B', '456 Elm St', '85', '2022-02-20');
+
+-- Insert sample data into Subjects table
+INSERT INTO Subjects (student_id, subject_name, attendance)
+VALUES
+    (1, 'Math', 90),
+    (2, 'Math', 85);
+
+-- Display data from the Students table
+SELECT * FROM Students;
+
+-- Display data from the Subjects table
+SELECT * FROM Subjects;

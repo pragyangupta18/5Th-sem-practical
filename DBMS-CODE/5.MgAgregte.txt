@@ -1,0 +1,108 @@
+db.books.insertMany([
+{
+title: "The Great Gatsby",
+author: "F. Scott Fitzgerald",
+genre: "Fiction",
+price: 12.99,
+published_date: ISODate("1925-04-10")
+},
+{
+title: "To Kill a Mockingbird",
+author: "Harper Lee",
+genre: "Fiction",
+price: 10.99,
+published_date: ISODate("1960-07-11")
+},
+{
+title: "The Catcher in the Rye",
+author: "J.D. Salinger",
+genre: "Fiction",
+price: 9.99,
+published_date: ISODate("1951-07-16")
+},
+{
+title: "The Da Vinci Code",
+author: "Dan Brown",
+genre: "Mystery",
+price: 14.99,
+published_date: ISODate("2003-03-18")
+},
+{
+title: "Dune",
+author: "Frank Herbert",
+genre: "Sci-Fi",
+price: 15.99,
+published_date: ISODate("1965-06-01")
+},
+{
+title: "Sapiens: A Brief History of Humankind",
+author: "Yuval Noah Harari",
+genre: "Non-Fiction",
+price: 16.99,
+published_date: ISODate("2011-04-11")
+},
+{
+title: "The Hobbit",
+author: "J.R.R. Tolkien",
+genre: "Fantasy",
+price: 11.99,
+published_date: ISODate("1937-09-21")
+}])
+
+
+db.books.aggregate([
+{
+$group: {
+_id: null,
+averagePrice: { $avg: "$price" }
+}
+}
+])
+
+db.books.aggregate([
+{
+$group: {
+_id: "$genre",
+count: { $sum: 1 }
+}
+}
+])
+
+db.books.aggregate([
+{
+$group: {
+_id: "$genre",
+maxPrice: { $max: "$price" }
+}
+}
+])
+
+db.books.aggregate([
+{
+$group: {
+_id: "$author",
+bookCount: { $sum: 1 }
+}
+},
+{
+$sort: { bookCount: -1 }
+},
+{
+$limit: 1
+}
+])
+
+db.books.aggregate([
+{
+$sort: { published_date: -1 }
+}
+])
+
+db.books.aggregate([
+{
+$sort: { price: 1 }
+}
+])
+
+db.books.createIndex({ title: 1 })
+db.books.getIndexes()

@@ -1,0 +1,54 @@
+create table oldroll(roll int,Name varchar(20)); 
+create table newroll(roll int,Name varchar(20)); 
+insert into newroll values(2,'dhanshree'); 
+insert into newroll values(5,'asmita'); 
+insert into oldroll values(2,'Hema'); 
+insert into oldroll values(5,'Aditi'); 
+insert into oldroll values(4,'srushti'); 
+insert into oldroll values(5,'asmita'); 
+select * from newroll; 
+select * from oldroll;
+DELIMITER $$
+
+CREATE PROCEDURE rolllist()
+BEGIN
+    DECLARE a INT;
+    DECLARE a1 VARCHAR(10);
+    DECLARE b INT;
+    DECLARE b1 VARCHAR(10);
+    DECLARE done INT DEFAULT FALSE;
+    
+    DECLARE c1 CURSOR FOR SELECT roll, name FROM oldroll;
+    DECLARE c2 CURSOR FOR SELECT roll, name FROM newroll;
+    
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+    
+    OPEN c1;
+    OPEN c2;
+    
+    loop1: LOOP
+        FETCH c1 INTO a, a1;
+        IF done THEN
+            LEAVE loop1;
+        END IF;
+        
+        loop2: LOOP
+            FETCH c2 INTO b, b1;
+            IF done THEN
+                INSERT INTO newroll VALUES (a, a1);
+                LEAVE loop2;
+            END IF;
+            
+            IF a = b THEN
+                LEAVE loop2;
+            END IF;
+        END LOOP;
+    END LOOP;
+
+    CLOSE c1;
+    CLOSE c2;
+END $$
+
+DELIMITER ;
+call rolllist();
+select*from newroll;

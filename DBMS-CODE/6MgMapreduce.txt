@@ -1,0 +1,25 @@
+db.customer.insertMany([ 
+ { cid:1, cname:"ABC", amount:2000, product_name:"Iphone Charger" },
+ { cid:2, cname:"XYZ", amount:40000, product_name:"Iphone 13" },
+ { cid:1, cname:"ABC", amount:50000, product_name:"Samsung S23 FE" },
+ { cid:4, cname:"MNO", amount:55000, product_name:"Iphone 14" }]);
+
+
+var mapFunction = function () {
+  emit(this.cid, this.amount);
+};
+
+
+var reduceFunction = function (key, values) {
+  return Array.sum(values);
+};
+
+
+db.customer.mapReduce(mapFunction, reduceFunction, { out: "customer_summary" });
+
+
+
+db.customer_summary.find().forEach(function (doc) {
+  print("Customer ID: " + doc._id + ", Total Amount Spent: " + doc.value);
+});
+
