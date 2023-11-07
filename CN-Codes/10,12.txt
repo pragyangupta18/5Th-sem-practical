@@ -1,0 +1,27 @@
+Commands
+
+Download Wireshark -> Go to Capture. 
+
+12. To study the SSL protocol by capturing the packets using Wireshark tool while visiting any
+SSL secured website (banking, e-commerce etc.).
+
+10.  Capture packets using Wireshark and accomplish the following and save the output in file:
+
+a. Capture all TCP traffic to/from Facebook when logging into your Facebook account:
+tcp && ip.addr== my ip address && ip.addr == (on terminal ping Facebook.com)
+
+b. Capture all HTTP traffic to/from Facebook when logging into your Facebook account:
+Example.com or techpanda.org or sppu site unipune
+Http && ip.addr== my ip address && ip.addr == (on terminal ping Facebook.com)
+
+c. Write a display filter expression to count all TCP packets with the flags SYN, PSH, and RST set:
+tcp.flags.syn == 1 && ip.addr== my ip address && ip.addr == (on terminal ping Facebook.com)
+tcp.flags.push == 1 && ip.addr== my ip address && ip.addr == (on terminal ping Facebook.com)
+tcp.flags.reset == 1 && ip.addr== my ip address && ip.addr == (on terminal ping Facebook.com)
+
+d. Count how many TCP packets you received from/sent to Facebook (other website) and how many were also HTTP packets:
+It Will be written below . 
+
+
+
+Facebook- Mynameispassword
